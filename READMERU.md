@@ -330,3 +330,10 @@ gcc -shared -o engine.dll engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lc
 
 **Скопируйте src** и добавьте компилятору флаг к директории в которой распологается engine.h. Например - 
 `gcc -I~/include/engine example.c -o example.o `
+
+Самостоятельная сборка библиотеки Python
+----------------
+Если у вас шалит в жопе и вам не нравиться PyPi соберите библиотеку сами.
+```
+python setup.py sdist bdist_wheel
+```
