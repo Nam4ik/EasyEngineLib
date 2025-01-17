@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: EasyEngine
+Version: 0.1
+Summary: This a simple SDL2 based 2d UI engine. Used for creating windows without borders. Can render jpg, png, gif and simple grafics on screen like python-turtle. Can be used like C/CPP header or python lib. Suppport async work
+Home-page: https://t.me/ArcaneDevStudio
+Author: Namilsky
+Author-email: alive6863@gmail.com
+Project-URL: GitHub, https://GitHub.com/Nam4ik/EasyEngineLib
+Keywords: Graphics 2d
+Classifier: Programming language :: C++, Python
+Classifier: License :: OSI Appreoved :: MIT
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown

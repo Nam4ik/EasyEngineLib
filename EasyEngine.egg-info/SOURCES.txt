@@ -1,0 +1,8 @@
+README.md
+setup.cfg
+setup.py
+EasyEngine.egg-info/PKG-INFO
+EasyEngine.egg-info/SOURCES.txt
+EasyEngine.egg-info/dependency_links.txt
+EasyEngine.egg-info/top_level.txt
+src/__init__.py
