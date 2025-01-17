@@ -1,8 +1,31 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
+from setuptools.command.build_ext import build_ext
+import os
 
 def readme():
     with open('README.md', 'r') as f:
         return f.read()
+
+def readme():
+    with open('README.md', 'r') as f:
+        return f.read()
+
+module = Extension(
+    'engine._engine',
+    sources=[
+        'engine/engine.c'
+    ],
+    libraries=[
+        'SDL2', 'SDL2_image', 'pthread', 'portaudio', 'json-c'
+    ],
+    include_dirs=[
+        '/usr/include/SDL2',  # Путь к заголовочным файлам SDL2
+        '/usr/include/json-c'  # Путь к заголовочным файлам json-c
+    ],
+    library_dirs=[
+        '/usr/lib'  # Путь к библиотекам
+    ]
+)
 
 
 
