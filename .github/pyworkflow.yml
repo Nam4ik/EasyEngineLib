@@ -1,0 +1,15 @@
+# .github/workflows/ci-cd.yml
+jobs:
+  pypi-publish:
+    name: PyEasyEngine
+    runs-on: all 
+    environment:
+      name: pypi
+      url: https://pypi.org/p/PyEasyEngine
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+    # retrieve your distributions here
+
+    - name: PyEasyEngine
+      uses: pypa/gh-action-pypi-publish@release/v1
