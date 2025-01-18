@@ -7,8 +7,6 @@ Author: Namilsky
 Author-email: alive6863@gmail.com
 Project-URL: GitHub, https://GitHub.com/Nam4ik/EasyEngineLib
 Keywords: Graphics 2d
-Classifier: Programming language :: C++, Python
-Classifier: License :: OSI Appreoved :: MIT
-Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
+License-File: LICENSE

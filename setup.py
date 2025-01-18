@@ -41,11 +41,9 @@ setup(
     #    url1='https://github.com/Nam4ik/',
     packages=find_packages(),
     install_requires=[''], #SDL2, and posix libs 
-    classifiers=[
-        'Programming language :: C++, Python',
-        'License :: OSI Appreoved :: MIT',
-        'Operating System :: OS Independent'
-        ],
+    #    classifiers=[
+    #    'Programming language :: C++, Python'
+    #    ],
     keywords='Graphics 2d',
     project_urls={
         'GitHub': 'https://GitHub.com/Nam4ik/EasyEngineLib'

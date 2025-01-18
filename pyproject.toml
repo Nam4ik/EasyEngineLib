@@ -1,0 +1,14 @@
+[build-system]
+requires = ["sip >=5, <6"]
+build-backend = "sipbuild.api"
+
+[tool.sip.metadata]
+name = 'EasyEngine'
+version = "0.2"
+license = "MIT"
+
+[tool.sip.bindings.easyengine]
+headers=["engine.h"]
+libraries=["engine", "sdl2", "sdl2_image", "sdl2_gfx", "portaudio", "cjson", "pthread"]
+includ-dirs=["src/"]
+librariy-dirs=["src/bin"]
