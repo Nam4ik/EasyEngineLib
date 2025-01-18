@@ -1,6 +1,10 @@
-<h1>Использование</h1>
+<h1>Использование и информация</h1>
 
 __В данный момент это мой пет проект и он еще в разработке. Он будет учавствовать в других проектах когда перестанет быть сыроватым. Но я думаю никому это не интересно по этому перейду к документации.__ 
+
+[![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=for-the-badge&logo=telegram)](https://t.me/ArcaneDevStudio)
+[![Contact Me](https://img.shields.io/badge/Contact-Me-green?style=for-the-badge&logo=telegram)](https://t.me/Nam4ik)
+
 
 Возможности
 --------------
