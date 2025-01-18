@@ -4,7 +4,7 @@
 #include "engine.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_gfxPrimitives.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <portaudio.h>
 #include <cjson/cJSON.h>
 #include <stdio.h>
@@ -26,182 +26,6 @@ static int currentY = 0;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 static char* prompt = NULL;
-
-void initEngine(const char* title, int width, int height) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return;
-    }
-
-    if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_GIF) & (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_GIF))) {
-        printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
-        return;
-    }
-
-    window = SDL_CreateWindow(
-        title,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        width,
-        height,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP
-    );
-
-    if (!window) {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        return;
-    }
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-        return;
-    }
-
-    rendering = true;
-    pthread_create(&renderingThread, NULL, renderingThreadFunc, NULL);
-
-    recording = true;
-    pthread_create(&recordingThread, NULL, recordingThreadFunc, NULL);
-}
-
-void cleanupEngine() {
-    rendering = false;
-    pthread_cond_signal(&cond);
-    pthread_join(renderingThread, NULL);
-
-    recording = false;
-    pthread_cond_signal(&cond);
-    pthread_join(recordingThread, NULL);
-
-    if (renderer) {
-        SDL_DestroyRenderer(renderer);
-    }
-    if (window) {
-        SDL_DestroyWindow(window);
-    }
-    IMG_Quit();
-    SDL_Quit();
-}
-
-void renderRectangle(int x, int y, int width, int height, unsigned int color) {
-    if (!renderer) {
-        return;
-    }
-
-    SDL_SetRenderDrawColor(renderer, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, 255);
-    SDL_Rect rect = { x, y, width, height };
-    SDL_RenderFillRect(renderer, &rect);
-    SDL_RenderPresent(renderer);
-}
-
-void renderImage(const char* imagePath, int x, int y) {
-    pthread_mutex_lock(&mutex);
-    if (currentImagePath) {
-        free(currentImagePath);
-    }
-    currentImagePath = strdup(imagePath);
-    currentX = x;
-    currentY = y;
-    pthread_cond_signal(&cond);
-    pthread_mutex_unlock(&mutex);
-}
-
-void renderGIF(const char* gifPath, int x, int y) {
-    pthread_mutex_lock(&mutex);
-    if (currentGIFPath) {
-        free(currentGIFPath);
-    }
-    currentGIFPath = strdup(gifPath);
-    currentX = x;
-    currentY = y;
-    pthread_cond_signal(&cond);
-    pthread_mutex_unlock(&mutex);
-}
-
-void* renderingThreadFunc(void* arg) {
-    SDL_Texture* texture = NULL;
-    SDL_Rect dstRect;
-    int frameDelay = 100; // Delay between frames in milliseconds
-
-    while (rendering) {
-        pthread_mutex_lock(&mutex);
-        while ((!currentImagePath && !currentGIFPath) && rendering) {
-            pthread_cond_wait(&cond, &mutex);
-        }
-        if (!rendering) {
-            pthread_mutex_unlock(&mutex);
-            break;
-        }
-
-        char* imagePath = currentImagePath ? strdup(currentImagePath) : NULL;
-        char* gifPath = currentGIFPath ? strdup(currentGIFPath) : NULL;
-        int x = currentX;
-        int y = currentY;
-        currentImagePath = NULL;
-        currentGIFPath = NULL;
-        pthread_mutex_unlock(&mutex);
-
-        if (!renderer) {
-            continue;
-        }
-
-        if (imagePath) {
-            SDL_Surface* loadedSurface = IMG_Load(imagePath);
-            if (!loadedSurface) {
-                printf("Unable to load image %s! SDL_image Error: %s\n", imagePath, IMG_GetError());
-                free(imagePath);
-                continue;
-            }
-
-            texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-            if (!texture) {
-                printf("Unable to create texture from %s! SDL Error: %s\n", imagePath, SDL_GetError());
-                SDL_FreeSurface(loadedSurface);
-                free(imagePath);
-                continue;
-            }
-
-            dstRect.x = x;
-            dstRect.y = y;
-            dstRect.w = loadedSurface->w;
-            dstRect.h = loadedSurface->h;
-            SDL_FreeSurface(loadedSurface);
-            free(imagePath);
-        } else if (gifPath) {
-            SDL_Surface* loadedSurface = IMG_Load(gifPath);
-            if (!loadedSurface) {
-                printf("Unable to load GIF %s! SDL_image Error: %s\n", gifPath, IMG_GetError());
-                free(gifPath);
-                continue;
-            }
-
-            texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-            if (!texture) {
-                printf("Unable to create texture from %s! SDL Error: %s\n", gifPath, IMG_GetError());
-                SDL_FreeSurface(loadedSurface);
-                free(gifPath);
-                continue;
-            }
-
-            dstRect.x = x;
-            dstRect.y = y;
-            dstRect.w = loadedSurface->w;
-            dstRect.h = loadedSurface->h;
-            SDL_FreeSurface(loadedSurface);
-            free(gifPath);
-        }
-
-        if (texture) {
-            SDL_RenderClear(renderer);
-            SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-            SDL_RenderPresent(renderer);
-            SDL_DestroyTexture(texture);
-            SDL_Delay(frameDelay);
-        }
-    }
-    return NULL;
-}
 
 void* recordingThreadFunc(void* arg) {
     PaStreamParameters inputParameters;
@@ -292,7 +116,7 @@ void* recordingThreadFunc(void* arg) {
     long length = ftell(jsonFile);
     fseek(jsonFile, 0, SEEK_SET);
 
-    char* jsonString = malloc(length + 1);
+    char* jsonString = (char*)malloc(length + 1);
     fread(jsonString, 1, length, jsonFile);
     jsonString[length] = '\0';
     fclose(jsonFile);
@@ -320,6 +144,193 @@ void* recordingThreadFunc(void* arg) {
     return NULL;
 }
 
+void* renderingThreadFunc(void* arg){
+   SDL_Texture* texture = NULL;
+    SDL_Rect dstRect;
+    int frameDelay = 100; // Delay between frames in milliseconds
+
+    while (rendering) {
+        pthread_mutex_lock(&mutex);
+        while ((!currentImagePath && !currentGIFPath) && rendering) {
+            pthread_cond_wait(&cond, &mutex);
+        }
+        if (!rendering) {
+            pthread_mutex_unlock(&mutex);
+            break;
+        }
+
+        char* imagePath = currentImagePath ? strdup(currentImagePath) : NULL;
+        char* gifPath = currentGIFPath ? strdup(currentGIFPath) : NULL;
+        int x = currentX;
+        int y = currentY;
+        currentImagePath = NULL;
+        currentGIFPath = NULL;
+        pthread_mutex_unlock(&mutex);
+
+        if (!renderer) {
+            continue;
+        }
+
+        if (imagePath) {
+            SDL_Surface* loadedSurface = IMG_Load(imagePath);
+            if (!loadedSurface) {
+                printf("Unable to load image %s! SDL_image Error: %s\n", imagePath, IMG_GetError());
+                free(imagePath);
+                continue;
+            }
+
+            texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+            if (!texture) {
+                printf("Unable to create texture from %s! SDL Error: %s\n", imagePath, SDL_GetError());
+                SDL_FreeSurface(loadedSurface);
+                free(imagePath);
+                continue;
+            }
+
+            dstRect.x = x;
+            dstRect.y = y;
+            dstRect.w = loadedSurface->w;
+            dstRect.h = loadedSurface->h;
+            SDL_FreeSurface(loadedSurface);
+            free(imagePath);
+        } else if (gifPath) {
+            SDL_Surface* loadedSurface = IMG_Load(gifPath);
+            if (!loadedSurface) {
+                printf("Unable to load GIF %s! SDL_image Error: %s\n", gifPath, IMG_GetError());
+                free(gifPath);
+                continue;
+            }
+
+            texture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
+            if (!texture) {
+                printf("Unable to create texture from %s! SDL Error: %s\n", gifPath, IMG_GetError());
+                SDL_FreeSurface(loadedSurface);
+                free(gifPath);
+                continue;
+            }
+
+            dstRect.x = x;
+            dstRect.y = y;
+            dstRect.w = loadedSurface->w;
+            dstRect.h = loadedSurface->h;
+            SDL_FreeSurface(loadedSurface);
+            free(gifPath);
+        }
+
+        if (texture) {
+            SDL_RenderClear(renderer);
+            SDL_RenderCopy(renderer, texture, NULL, &dstRect);
+            SDL_RenderPresent(renderer);
+            SDL_DestroyTexture(texture);
+            SDL_Delay(frameDelay);
+        }
+    }
+    return NULL;
+}
+
+
+void initEngine(const char* title, int width, int height) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return;
+    }
+
+    if (!(IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF) & (IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF))) {
+        printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
+        return;
+    }
+
+    window = SDL_CreateWindow(
+        title,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        width,
+        height,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP
+    );
+
+    if (!window) {
+        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+        return;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
+        return;
+    }
+
+    rendering = true;
+    pthread_create(&renderingThread, NULL, renderingThreadFunc, NULL);
+
+    recording = true;
+    pthread_create(&recordingThread, NULL, recordingThreadFunc, NULL);
+}
+
+void cleanupEngine() {
+    rendering = false;
+    pthread_cond_signal(&cond);
+    pthread_join(renderingThread, NULL);
+
+    recording = false;
+    pthread_cond_signal(&cond);
+    pthread_join(recordingThread, NULL);
+
+    if (renderer) {
+        SDL_DestroyRenderer(renderer);
+    }
+    if (window) {
+        SDL_DestroyWindow(window);
+    }
+    IMG_Quit();
+    SDL_Quit();
+    
+    // Освобождение памяти
+    free(currentImagePath);
+    free(currentGIFPath);
+    free(prompt);
+}
+
+void renderRectangle(int x, int y, int width, int height, unsigned int color) {
+    if (!renderer) {
+        return;
+    }
+
+    SDL_SetRenderDrawColor(renderer, (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF, 255);
+    SDL_Rect rect = { x, y, width, height };
+    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderPresent(renderer);
+}
+
+void renderImage(const char* imagePath, int x, int y) {
+    pthread_mutex_lock(&mutex);
+    if (currentImagePath) {
+        free(currentImagePath);
+    }
+    currentImagePath = strdup(imagePath);
+    currentX = x;
+    currentY = y;
+    pthread_cond_signal(&cond);
+    pthread_mutex_unlock(&mutex);
+}
+
+void renderGIF(const char* gifPath, int x, int y) {
+    pthread_mutex_lock(&mutex);
+    if (currentGIFPath) {
+        free(currentGIFPath);
+    }
+    currentGIFPath = strdup(gifPath);
+    currentX = x;
+    currentY = y;
+    pthread_cond_signal(&cond);
+    pthread_mutex_unlock(&mutex);
+}
+
+
+
+
+
+
 void startRenderingThread() {
     rendering = true;
     pthread_create(&renderingThread, NULL, renderingThreadFunc, NULL);
@@ -346,9 +357,14 @@ void setPrompt(const char* prompt) {
     pthread_mutex_lock(&mutex);
     if (prompt) {
         if (prompt) {
-            free(prompt);
+            free((void*)prompt);
         }
         prompt = strdup(prompt);
     }
     pthread_mutex_unlock(&mutex);
 }
+
+int main(){
+    initEngine("EasyEngine", 800, 600);
+}
+
