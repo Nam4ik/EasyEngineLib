@@ -1,3 +1,7 @@
+**Multi-lang readme - [Russian](https://github.com/Nam4ik/EasyEngineLib/blob/main/READMERU.md)**
+
+
+
 <h1>Usage</h1>
 
 __At the moment, this is my pet project and it is still in development. He will participate in other projects when he stops being a bit raw. But I don't think anyone is interested in this, so I'll go to the documentation.__ 
@@ -17,7 +21,7 @@ void initEngine(const char* title, int width, int height);
   <br>
   <br>
 
-- `cleanupEngine' - Just **cleans up the memory and shuts down**, at the end of the code there should be
+- `cleanupEngine` - Just **cleans up the memory and shuts down**, at the end of the code there should be
 ```C
 void cleanupEngine();
 ```  
