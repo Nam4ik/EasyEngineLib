@@ -1,10 +1,13 @@
+<h1>Usage and info</h1>
+
+__At the moment, this is my pet project and it is still in development. He will participate in other projects when he stops being a bit raw. But I don't think anyone is interested in this, so I'll go to the documentation.__ 
+
+[![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=for-the-badge&logo=telegram)](https://t.me/ArcaneDevStudio)
+[![Contact Me](https://img.shields.io/badge/Contact-Me-green?style=for-the-badge&logo=telegram)](https://t.me/Nam4ik)
+
 **Multi-lang readme - [Russian](https://github.com/Nam4ik/EasyEngineLib/blob/main/READMERU.md)**
 
 
-
-<h1>Usage</h1>
-
-__At the moment, this is my pet project and it is still in development. He will participate in other projects when he stops being a bit raw. But I don't think anyone is interested in this, so I'll go to the documentation.__ 
 
 Opportunities
 --------------
