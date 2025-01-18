@@ -32,7 +32,7 @@ void cleanupEngine();
 ```C
 void renderImage(const char* imagePath, int x, int y);
 ```
-  - `ImagePath': **The path to the image.**
+  - `ImagePath`: **The path to the image.**
   - `x`: **The X coordinate of the upper-left corner.**
   - `y`: **The Y coordinate of the upper-left corner.**
 <br>
@@ -54,7 +54,7 @@ void renderRectangle(int x, int y, int width, int height, unsigned int color);
 ```C
 void renderGIF(const char* gifPath, int x, int y);
 ```
-  - `gifPath': **The path to the GIF animation.**
+  - `gifPath`: **The path to the GIF animation.**
   - `x`: **The X coordinate of the upper-left corner.**
   - `y`: **The Y coordinate of the upper-left corner.**
 <br>
