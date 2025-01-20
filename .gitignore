@@ -1,4 +1,6 @@
 
+*.7z
+
 pre-builds/
 
 # Prerequisites
