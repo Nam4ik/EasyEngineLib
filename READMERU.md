@@ -4,7 +4,10 @@ __В данный момент это мой пет проект и он еще 
 
 [![Telegram Channel](https://img.shields.io/badge/Telegram-Channel-blue?style=for-the-badge&logo=telegram)](https://t.me/ArcaneDevStudio)
 [![Contact Me](https://img.shields.io/badge/Contact-Me-green?style=for-the-badge&logo=telegram)](https://t.me/Nam4iks)
-
+<br>
+>[!WARNING]
+>Движок не выпущен в релиз и пока скорее всего будет работать не корректно
+>Свяжитесь со мной если увидите проблему
 
 Возможности
 --------------
@@ -327,7 +330,9 @@ gcc -shared -o engine.dll engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lc
 
 <h3>Python библиотека</h3>
 
-**Есть на PyPi** - `pip install EasyEngineLib`
+**Есть на PyPi** - `pip install EasyEngine`
+>[!NOTE]
+>Более менее стабильный релиз - 0.2.1
 
 
 <h3>C/C++ заголовок</h3>
@@ -339,5 +344,8 @@ gcc -shared -o engine.dll engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lc
 ----------------
 Если у вас шалит в жопе и вам не нравиться PyPi соберите библиотеку сами.
 ```
-python setup.py sdist bdist_wheel
+python setup.py build
+python setup.py install
 ```
+>[!WARNING]
+>Пока что может не работать на windows
