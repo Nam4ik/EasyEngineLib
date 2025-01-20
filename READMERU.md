@@ -306,6 +306,16 @@ sudo pacman -S sdl2 sdl2_image portaudio json-c base-devel
 ```bash
 vcpkg install sdl2 cjson portaudio
 ```
+Сборка
+----------
+```
+make
+```
+или
+```
+gcc engine.cpp -fPIC -lpthread -lcjson -lportaudio -SDL2_image -SDL2 -o engine.o
+```
+
 
 Сборка в динамическую библиотеку
 ------------
@@ -314,14 +324,14 @@ vcpkg install sdl2 cjson portaudio
 
 **Для Linux**
 ```shell
-gcc -shared -o libengine.so engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lcjson
+gcc -shared -o libengine.so engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lcjson -fPIC
 ```
 <br>
 
 **Для Windows  (используя MinGW):** 
 ```shell
 gcc -c engine.c -o engine.o -DENGINE_EXPORTS
-gcc -shared -o engine.dll engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lcjson
+gcc -shared -o engine.dll engine.o -lSDL2 -lSDL2_image -lpthread -lportaudio -lcjson -fPIC
 ```
 
 
