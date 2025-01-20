@@ -1,5 +1,25 @@
-//gcc -c -fPIC engine.c -o engine.o
-//gcc -shared -o libengine.so engine.o -lSDL2 -lSDL2_image -lpthread
+//gcc -fPIC -lportaudio -lcjson -lSDL2 -lSDL2_image -lpthread engine.cpp -o engine.o
+//gcc -shared -o libengine.so engine.o -fPIC -lportaudio -lcjson -lSDL2 -lSDL2_image -lpthread 
+
+//TODO Python turtle UI and audio processsing with whisper.cpp 
+//TODO Fix .wav buffer and optimize project.
+
+/*
+  __________________                      ______
+  ___    |_  /___  /___________________ _ ___  /______  __
+  __  /| |  __/_  __ \  _ \_  __ \  __ `/ __  __ \_  / / /
+  _  ___ / /_ _  / / /  __/  / / / /_/ /  _  /_/ /  /_/ /
+  /_/  |_\__/ /_/ /_/\___//_/ /_/\__,_/   /_.___/_\__, /
+                                               /____/
+  _______                                ________              __________
+  ___    |__________________ _______________  __ \_______   __ ___  ___  \
+  __  /| |_  ___/  ___/  __ `/_  __ \  _ \_  / / /  _ \_ | / / __  / _ \  |
+  _  ___ |  /   / /__ / /_/ /_  / / /  __/  /_/ //  __/_ |/ /  _  / , _/ /
+  /_/  |_/_/    \___/ \__,_/ /_/ /_/\___//_____/ \___/_____/   | /_/|_| /
+                                                                \______/
+
+*/
+
 
 #include "engine.h"
 #include <SDL2/SDL.h>

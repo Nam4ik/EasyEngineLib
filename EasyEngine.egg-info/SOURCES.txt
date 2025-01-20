@@ -1,9 +1,13 @@
 LICENSE
 README.md
+pyproject.toml
 setup.cfg
 setup.py
 EasyEngine.egg-info/PKG-INFO
 EasyEngine.egg-info/SOURCES.txt
 EasyEngine.egg-info/dependency_links.txt
 EasyEngine.egg-info/top_level.txt
+EasyEngine.egg-info/zip-safe
 src/__init__.py
+src/convert_audio_to_text.py
+src/engine.cpp

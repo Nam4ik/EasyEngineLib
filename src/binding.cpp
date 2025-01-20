@@ -9,8 +9,8 @@ PYBIND11_MODULE(engine, m) {
     m.def("renderRectangle", &renderRectangle, "Render a rectangle");
     m.def("renderImage", &renderImage, "Render an image");
     m.def("renderGif", &renderGIF, "Render a GIF");
-    m.def("startRecordingThread", &startRenderingThread, "Startring thread for async work with engine")
-    m.def("stopRecordingThread", &stopRenderingThread, "Stopping rec thread")
-    m.def("startRenderingThread", &startRecordingThread, "Starting new SDL renderer")
-    m.def("stopRenderingThread", &stopRenderingThread, "Stop SDL renderer"))
+//   m.def("startRecordingThread", &startRenderingThread, "Startring thread for async work with engine")
+//   m.def("stopRecordingThread", &stopRenderingThread, "Stopping rec thread")
+//   m.def("startRenderingThread", &startRecordingThread, "Starting new SDL renderer")
+//   m.def("stopRenderingThread", &stopRenderingThread, "Stop SDL renderer"))
 }
