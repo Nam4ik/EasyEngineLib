@@ -3,6 +3,7 @@
 
 //TODO Python turtle UI and audio processsing with whisper.cpp 
 //TODO Fix .wav buffer and optimize project.
+//TODO Add OpenCV screen capture func (FOR DEBUG AND NEW FUNCS)
 //...
 
 /*
