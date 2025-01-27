@@ -1,7 +1,9 @@
 //#include <checking.h>
-#include <windows.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#ifdef __WIN32
+    #include <windows.h>
+#else 
+    #include <X11/Xlib.h>
+    #include <X11/Xutil.h>
 #include <fstream>
 #include <iostream>
 #include <opencv4/opencv2/opencv.hpp>
