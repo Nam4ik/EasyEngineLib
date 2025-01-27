@@ -8,6 +8,10 @@
 #include <pthread>
 #include <cstlib>
 
+//FIXFILE FOR OpenCV.cpp 
+//Not released and unuseful now.
+
+
 #ifdef __WIN32
 void captureScreen(Mat& screen) {
     HWND hwndDesktop = GetDesktopWindow();
