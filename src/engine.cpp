@@ -22,6 +22,7 @@
 
 */
 
+
 #include "lib/OpenCV.hpp"
 #include "engine.h"
 #include <SDL2/SDL.h>
@@ -35,12 +36,17 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+//TODO Change console - like kitty, ps, sh, blackbox, gnometerm 
+
+
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static pthread_t renderingThread;
 static pthread_t recordingThread;
 static bool rendering = false;
 static bool recording = false;
+static bool debug = false;
+static char console = 
 static char* currentImagePath = NULL;
 static char* currentGIFPath = NULL;
 static int currentX = 0;
@@ -48,6 +54,26 @@ static int currentY = 0;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 static char* prompt = NULL;
+
+//Warning! Unstable!
+
+
+void launchConsole(const char* title) {
+
+    #ifdef _WIN32
+        //Win
+        char command[256];
+        snprintf(command, sizeof(command), "start cmd /k title %s", title);
+        system(command);
+    #else
+        //Unix
+        char command[256];
+        snprintf(command, sizeof(command), "gnome-terminal --title='%s'", title);
+        system(command);
+    #endif
+
+}
+
 
 void* recordingThreadFunc(void* arg) {
     PaStreamParameters inputParameters;
@@ -386,7 +412,20 @@ void setPrompt(const char* prompt) {
     pthread_mutex_unlock(&mutex);
 }
 
-int main(){
-    initEngine("EasyEngine", 800, 600);
+int main(int argc, char* argv[]) {
+    if (argc > 1 && strcmp(argv[1], "--debug") == 0) {
+        debugMode = true;
+    }
+    if (debugMode) {
+        launchConsole("Log Console");
+        launchConsole("Command Console");
+    }
+
+  cleanupEngine();
+  return 0;
 }
+
+
+
+
 
