@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 import os
-import sipbuild
+import pybind11 
 
 sip_file = 'binding.sip'
 

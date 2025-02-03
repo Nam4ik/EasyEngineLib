@@ -23,7 +23,7 @@
 */
 
 
-#include "lib/OpenCV.hpp"
+//#include "lib/OpenCV.hpp"
 #include "engine.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -45,8 +45,8 @@ static pthread_t renderingThread;
 static pthread_t recordingThread;
 static bool rendering = false;
 static bool recording = false;
-static bool debug = false;
-static char console = 
+static const bool debugMode = false;
+static const char* console =  "kitty";
 static char* currentImagePath = NULL;
 static char* currentGIFPath = NULL;
 static int currentX = 0;
