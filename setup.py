@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages, Extension
 from setuptools.command.build_ext import build_ext
 import os
-import pybind11 
+#import pybind11 
 
 sip_file = 'binding.sip'
 
@@ -38,6 +38,21 @@ def readmeen():
 #         ]
 #     )
 
+classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Environment :: GPU',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Environment :: X11 Applications',
+        'Environment :: Win32 (MS Windows)',
+        'Natural Language :: English',
+        'Natural Language :: Russian',
+        'Programming language :: Python :: 3',
+        'Programming language :: C++ :: GCC ',
+        'Programming language :: C :: GCC ',
+        'Operating System :: OS  Independent',
+
+        ]
 
 
 setup(

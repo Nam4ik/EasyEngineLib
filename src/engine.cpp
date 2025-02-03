@@ -45,7 +45,7 @@ static pthread_t renderingThread;
 static pthread_t recordingThread;
 static bool rendering = false;
 static bool recording = false;
-static const bool debugMode = false;
+static bool debugMode = false;
 static const char* console =  "kitty";
 static char* currentImagePath = NULL;
 static char* currentGIFPath = NULL;
