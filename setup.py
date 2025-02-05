@@ -38,7 +38,19 @@ def readmeen():
 #         ]
 #     )
 
-classifiers=[
+
+setup(
+    name='EasyEngine',
+    version='0.2.1',
+    author='Namilsky',
+    author_email='alive6863@gmail.com',
+    description='This a simple SDL2 based 2d UI engine. Used for creating windows without borders. Can render jpg, png, gif and simple grafics on screen like python-turtle. Can be used like C/CPP header or python lib. Suppport async work',
+    long_description=readmeen(),
+    long_description_content_type='text/markdown',
+    url='https://t.me/ArcaneDevStudio',
+    #    url1='https://github.com/Nam4ik/',
+    
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: GPU',
         'Intended Audience :: Developers',
@@ -52,19 +64,8 @@ classifiers=[
         'Programming language :: C :: GCC ',
         'Operating System :: OS  Independent',
 
-        ]
+        ],
 
-
-setup(
-    name='EasyEngine',
-    version='0.2.1',
-    author='Namilsky',
-    author_email='alive6863@gmail.com',
-    description='This a simple SDL2 based 2d UI engine. Used for creating windows without borders. Can render jpg, png, gif and simple grafics on screen like python-turtle. Can be used like C/CPP header or python lib. Suppport async work',
-    long_description=readmeen(),
-    long_description_content_type='text/markdown',
-    url='https://t.me/ArcaneDevStudio',
-    #    url1='https://github.com/Nam4ik/',
     packages=find_packages(),
     install_requires=[''], #SDL2, and posix libs 
     #    classifiers=[
@@ -79,3 +80,4 @@ setup(
     ext_modules=[Engine_Module]
     
         )
+        
