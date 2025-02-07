@@ -11,6 +11,16 @@
     #include <X11/Xutil.h>
 #endif
 
+extern "C"{
+    void captureScreen(cv::Mat& output);
+    bool isSameImage(const cv::Mat& img1, const cv::Mat& img2, double threshold = 1000.0);
+    void startMonitoring(const std::string& logFilePath = "activity.log",
+                        double threshold = 1000.0,
+                        int inactivityThreshold = 600,
+                        int checkInterval = 60);
+}
+
+
 //gcc OpenCV.cpp -o -shared OpenCV.so -fPIC -lthread 
 
 //TODO: optimize that fith multythreading 
