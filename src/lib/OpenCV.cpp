@@ -11,6 +11,8 @@
     #include <X11/Xutil.h>
 #endif
 
+//gcc OpenCV.cpp -o -shared OpenCV.so -fPIC -lthread 
+
 //TODO: optimize that fith multythreading 
 //TODO: Gui.....
 
