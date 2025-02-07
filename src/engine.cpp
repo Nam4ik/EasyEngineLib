@@ -43,6 +43,15 @@
 
 //TODO Change console - like kitty, ps, sh, blackbox, gnometerm 
 
+extern "C" {
+    void initEngine(const char* title, int width, int height);
+    void cleanupEngine();
+    void renderRectangle(int x, int y, int width, int height, unsigned int color);
+    void renderImage(const char* imagePath, int x, int y);
+    void renderGIF(const char* gifPath, int x, int y);
+}
+
+
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
@@ -416,7 +425,7 @@ void setPrompt(const char* prompt) {
     }
     pthread_mutex_unlock(&mutex);
 }
-
+/* Main not need for shared object
 int main(int argc, char* argv[]) {
     if (argc > 1 && strcmp(argv[1], "--debug") == 0) {
         debugMode = true;
@@ -425,10 +434,11 @@ int main(int argc, char* argv[]) {
         launchConsole("Log Console");
         launchConsole("Command Console");
     }
-
+*/
   cleanupEngine();
   return 0;
 }
+
 
 
 
