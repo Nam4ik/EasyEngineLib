@@ -13,11 +13,11 @@ char[] filename = "voicerec%d.log", local;
 
 system("touch", filename);
 
-#ifdef __WIN32
-  
+#ifdef __WIN32  
   return 0; 
-    
-
+#else 
+  void transcribe_audio(const char *audio_file_path, bool use_json);
+  
 
 #endif 
 
