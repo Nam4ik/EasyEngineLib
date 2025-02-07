@@ -1,17 +1,20 @@
 CXX = g++
-CXXFLAGS = -O3 -Wall -shared -fPIC -I/usr/include/ 
-LDFLAGS = -lSDL2 -lSDL2_image -lpthread -lportaudio -lcjson
+CXXFLAGS = -O3 -Wall -fPIC -I/usr/include/ 
+LDFLAGS = -lSDL2 -lSDL2_image -lpthread -lportaudio -lcjson 
 
-all: engine.so
+all: engine.so, OpenCV.so 
+
+binding.o: binding.cpp
+    $(CXX) $(CXXFLAGS) -c binding.cpp -o binding.o
 
 engine.so: binding.o engine.o
     $(CXX) -o $@ $^ $(LDFLAGS)
 
-binding.o: binding.cpp
-    $(CXX) $(CXXFLAGS) -c binding.cpp
+OpevCV.so: OpenCV.cpp 
+    $(CXX) -shared -o $@ $^ -lthread -fPIC
 
 engine.o: engine.cpp
-    $(CXX) $(CXXFLAGS) -c engine.cpp
+    $(CXX) $(CXXFLAGS) -c engine.cpp -o engine.o
 
 clean:
     rm -f *.o engine.so
