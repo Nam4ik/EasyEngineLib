@@ -1,106 +1,128 @@
+#include "OpenCV.hpp"
 #include <iostream>
-#include <opencv4/opencv2/opencv.hpp>
-#include <vector>
-#include <signal.h>
-#include <checking.h>
-#include <windows.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <fstream>
 #include <chrono>
 #include <thread>
-#include "get.h"
 
-using namespace std;
-using namespace cv;
+#ifdef _WIN32
+    #include <Windows.h>
+#else
+    #include <X11/Xlib.h>
+    #include <X11/Xutil.h>
+#endif
 
-// Функция для захвата экрана на Windows
-void captureScreenWindows(Mat& screen) {
-    HWND hwndDesktop = GetDesktopWindow();
-    HDC hdcDesktop = GetDC(hwndDesktop);
-    HDC hdcCapture = CreateCompatibleDC(hdcDesktop);
-    HBITMAP hbmCapture = CreateCompatibleBitmap(hdcDesktop, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
-    SelectObject(hdcCapture, hbmCapture);
-    BitBlt(hdcCapture, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), hdcDesktop, 0, 0, SRCCOPY);
-
-    BITMAP bmp;
-    GetObject(hbmCapture, sizeof(BITMAP), &bmp);
-    screen.create(bmp.bmHeight, bmp.bmWidth, CV_8UC4);
-    GetBitmapBits(hbmCapture, bmp.bmWidthBytes * bmp.bmHeight, screen.data);
-
-    DeleteObject(hbmCapture);
-    DeleteDC(hdcCapture);
-    ReleaseDC(hwndDesktop, hdcDesktop);
+extern "C"{
+    void captureScreen(cv::Mat& output);
+    bool isSameImage(const cv::Mat& img1, const cv::Mat& img2, double threshold = 1000.0);
+    void startMonitoring(const std::string& logFilePath = "activity.log",
+                        double threshold = 1000.0,
+                        int inactivityThreshold = 600,
+                        int checkInterval = 60);
 }
 
-// Функция для захвата экрана на Linux
-void captureScreenLinux(Mat& screen) {
-    Display* display = XOpenDisplay(NULL);
-    if (!display) {
-        cerr << "Cannot open display" << endl;
-        return;
-    }
+
+//gcc OpenCV.cpp -o -shared OpenCV.so -fPIC -lthread 
+
+//TODO: optimize that fith multythreading 
+//TODO: Gui.....
+
+using namespace cv;
+using namespace std;
+
+namespace ScreenCapture {
+
+void captureScreen(Mat& output) {
+#ifdef _WIN32
+    HWND hDesktop = GetDesktopWindow();
+    HDC hdc = GetDC(hDesktop);
+    int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+    HDC hCaptureDC = CreateCompatibleDC(hdc);
+    HBITMAP hBitmap = CreateCompatibleBitmap(hdc, width, height);
+    SelectObject(hCaptureDC, hBitmap);
+    BitBlt(hCaptureDC, 0, 0, width, height, hdc, 0, 0, SRCCOPY);
+
+    BITMAPINFOHEADER bi = {0};
+    bi.biSize = sizeof(BITMAPINFOHEADER);
+    bi.biWidth = width;
+    bi.biHeight = -height;
+    bi.biPlanes = 1;
+    bi.biBitCount = 32;
+    bi.biCompression = BI_RGB;
+
+    output.create(height, width, CV_8UC4);
+    GetDIBits(hdc, hBitmap, 0, height, output.data, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
+
+    ReleaseDC(hDesktop, hdc);
+    DeleteDC(hCaptureDC);
+    DeleteObject(hBitmap);
+#else
+    Display* display = XOpenDisplay(nullptr);
     Window root = DefaultRootWindow(display);
-    XWindowAttributes window_attributes;
-    XGetWindowAttributes(display, root, &window_attributes);
-    int width = window_attributes.width;
-    int height = window_attributes.height;
-    screen.create(height, width, CV_8UC4);
-    XImage* x_image = XGetImage(display, root, 0, 0, width, height, AllPlanes, ZPixmap);
-    if (x_image) {
-        memcpy(screen.data, x_image->data, width * height * 4);
-        cvtColor(screen, screen, COLOR_BGRA2BGR);
-        XDestroyImage(x_image);
+    XWindowAttributes attributes;
+    XGetWindowAttributes(display, root, &attributes);
+
+    XImage* img = XGetImage(display, root, 0, 0, 
+                          attributes.width, 
+                          attributes.height, 
+                          AllPlanes, ZPixmap);
+
+    if (img) {
+        output.create(attributes.height, attributes.width, CV_8UC4);
+        memcpy(output.data, img->data, output.total() * output.elemSize());
+        XDestroyImage(img);
+        cvtColor(output, output, COLOR_BGRA2BGR);
     }
     XCloseDisplay(display);
+#endif
 }
 
 bool isSameImage(const Mat& img1, const Mat& img2, double threshold) {
-    Mat gray1, gray2;
-    cvtColor(img1, gray1, COLOR_BGRA2GRAY);
-    cvtColor(img2, gray2, COLOR_BGRA2GRAY);
+    if (img1.size() != img2.size() || img1.type() != img2.type())
+        return false;
 
     Mat diff;
-    absdiff(gray1, gray2, diff);
-    double nonZeroCount = countNonZero(diff);
-    return (nonZeroCount < threshold);
+    absdiff(img1, img2, diff);
+    cvtColor(diff, diff, COLOR_BGR2GRAY);
+    threshold(diff, diff, 32, 255, THRESH_BINARY);
+    return (countNonZero(diff) < threshold);
 }
 
-int main() {
-    ofstream logFile("fgui_stdout.txt");
-    Mat prevScreen, currScreen;
-    const double threshold = 1000;
-    const int inactivityThreshold = 10; //TODO Нужно сделать это чтобы можно было менять из графических настроек
-    int inactivityTime = 0;
-
-    while (true) {
-        #ifdef _WIN32
-            captureScreenWindows(currScreen);
-        #else
-            captureScreenLinux(currScreen);
-        #endif
-
-        if (prevScreen.empty()) {
-            prevScreen = currScreen.clone();
-            this_thread::sleep_for(chrono::seconds(1));
-            continue;
-        }
-
-        if (isSameImage(prevScreen, currScreen, threshold)) {
-            inactivityTime++;
-            if (inactivityTime >= inactivityThreshold) {
-                logFile << "No activity detected for " << inactivityTime << " seconds.\n";
-                // Отправка лог-файла на email
-                get::send("fgui_stdout.txt");
-            }
-        } else {
-            inactivityTime = 0;
-        }
-
-        prevScreen = currScreen.clone();
-        this_thread::sleep_for(chrono::seconds(120));  //TODO Чтоб мозги не ебала тоже настраиваться должно
+void startMonitoring(const std::string& logFilePath,
+                    double threshold,
+                    int inactivityThreshold,
+                    int checkInterval) {
+    ofstream logFile(logFilePath, ios::app);
+    if (!logFile.is_open()) {
+        cerr << "Error opening log file!" << endl;
+        return;
     }
 
-    logFile.close();
-    return 0;
+    Mat prevFrame, currentFrame;
+    int inactiveSeconds = 0;
+
+    while (true) {
+        captureScreen(currentFrame);
+
+        if (!prevFrame.empty()) {
+            if (isSameImage(prevFrame, currentFrame, threshold)) {
+                inactiveSeconds += checkInterval;
+                logFile << "Inactivity detected: " << inactiveSeconds 
+                       << "/" << inactivityThreshold << " seconds\n";
+                
+                if (inactiveSeconds >= inactivityThreshold) {
+                    logFile << "ALERT: Maximum inactivity reached!\n";
+                    // Здесь можно добавить отправку email
+                }
+            } else {
+                inactiveSeconds = 0;
+            }
+        }
+
+        prevFrame = currentFrame.clone();
+        this_thread::sleep_for(chrono::seconds(checkInterval));
+    }
 }
+
+} // namespace ScreenCapture
