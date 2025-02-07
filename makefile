@@ -1,6 +1,6 @@
 
 CXX = g++
-CXXFLAGS = -fPIC -shared -I./lib -I./src -I/usr/include/python3.x  # Замените python3.x на вашу версию Python
+CXXFLAGS = -fPIC -shared -I./lib -I./src -I/usr/include/python3.11# Замените python3.x на вашу версию Python
 
 
 SRC_DIR = src
@@ -17,13 +17,12 @@ ENGINE_HDR = $(SRC_DIR)/engine.h
 OPENCV_SRC = $(LIB_DIR)/OpenCV.cpp
 OPENCV_HDR = $(LIB_DIR)/OpenCV.hpp
 
-
 all: $(ENGINE_SO) $(OPENCV_SO)
 
-$(ENGINE_SO): $(ENGINE_SRC) $(ENGINE_HDR) convert_audio_to_text.py
+$(ENGINE_SO): $(ENGINE_SRC) $(ENGINE_HDR) 
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
-$(OPENCV_SO): $(OPENCV_SRC) $(OPENCV_HDR) convert_audio_to_text.py
+$(OPENCV_SO): $(OPENCV_SRC) $(OPENCV_HDR) 
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 

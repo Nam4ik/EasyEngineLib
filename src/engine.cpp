@@ -43,7 +43,7 @@
 
 //TODO Change console - like kitty, ps, sh, blackbox, gnometerm 
 
-extern "C" {
+extern "C++" {
     void initEngine(const char* title, int width, int height);
     void cleanupEngine();
     void renderRectangle(int x, int y, int width, int height, unsigned int color);
@@ -435,9 +435,6 @@ int main(int argc, char* argv[]) {
         launchConsole("Command Console");
     }
 */
-  cleanupEngine();
-  return 0;
-}
 
 
 
