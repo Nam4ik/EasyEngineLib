@@ -4,7 +4,12 @@
 //TODO Python turtle UI and audio processsing with whisper.cpp 
 //TODO Fix .wav buffer and optimize project.
 //TODO Add OpenCV screen capture func (FOR DEBUG AND NEW FUNCS)
-//...
+//Need to remove useless funcs for optimise
+//Core dumped...
+//Maybe shared object will work?
+//... 
+
+//Developing for AthenaUI
 
 /*
   __________________                      ______
