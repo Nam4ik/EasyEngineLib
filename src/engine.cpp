@@ -41,6 +41,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 
+//TODO Add debug parameters 
 //TODO Change console - like kitty, ps, sh, blackbox, gnometerm 
 
 extern "C++" {
