@@ -1,0 +1,30 @@
+"Config":{
+  "VoiceRecognizer":{
+    "PocketSphinx_model_path": "/usr/share/pocketsphinx/model/en-us/",
+    "VoiceRecognizer_Type": "Python",
+    "NaturalLanguage_Type": "en-us"
+  }
+  "EngineWorkMode":{
+    "EngineDebug_Mode": false,
+    "MaxOptimisation_Mode": false,
+    "DebugShell_Type": "bash",
+    "ConsoleEmulator_Type": "gnometerm",
+    "MultithreadWorkEngine_Mode": true,
+    "BuildVer_Type": "Python"   
+ }
+  "ScreenProcessing":{
+    "XDG_SESSION_Type":"x11",
+    "IgnoringWindows_List": "NO",
+    "IgnoreMyScreen_Mode": false
+    "TresholdFrameProcessing_Time": 1000.0,
+    "InactivityTimeTreshold": 600,
+    "CheckIntervalTime": 60
+  }
+  "Logging":{
+    "LogLevel_Mode": "zero",
+    "PrivateLogs_Mode": true,
+    "LogToFile_Mode": false,
+    "LogToConsole_Mode": false
+  }
+
+}
