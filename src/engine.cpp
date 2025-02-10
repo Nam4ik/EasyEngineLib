@@ -69,6 +69,8 @@ All rights reserved Arcane ® 2025.
 
 //TODO Add debug parameters 
 //TODO Change console - like kitty, ps, sh, blackbox, gnometerm 
+//TODO Turtle UI and add to UI installation builder 
+
 
 extern "C++" {
     void initEngine(const char* title, int width, int height);
@@ -98,6 +100,300 @@ static char* prompt = NULL;
 
 //Warning! Unstable!
 
+
+typedef struct {
+    char* PocketSphinx_model_path;
+    char* VoiceRecognizer_Type;
+    char* NaturalLanguage_Type;
+} VoiceRecognizerConfig;
+
+typedef struct {
+    int EngineDebug_Mode;
+    int MaxOptimisation_Mode;
+    char* DebugShell_Type;
+    char* ConsoleEmulator_Type;
+    int MultithreadWorkEngine_Mode;
+    char* BuildVer_Type;
+} EngineWorkModeConfig;
+
+typedef struct {
+    char* XDG_SESSION_Type;
+    char* IgnoringWindows_List;
+    int IgnoreMyScreen_Mode;
+    double TresholdFrameProcessing_Time;
+    int InactivityTimeTreshold;
+    int CheckIntervalTime;
+} ScreenProcessingConfig;
+
+typedef struct {
+    char* LogLevel_Mode;
+    int PrivateLogs_Mode;
+    int LogToFile_Mode;
+    int LogToConsole_Mode;
+} LoggingConfig;
+
+typedef struct {
+    VoiceRecognizerConfig VoiceRecognizer;
+    EngineWorkModeConfig EngineWorkMode;
+    ScreenProcessingConfig ScreenProcessing;
+    LoggingConfig Logging;
+} Config;
+
+// Функция для загрузки и парсинга JSON файла
+void parse_config(const char* json_str, Config* config) {
+    cJSON* root = cJSON_Parse(json_str);
+    if (!root) {
+        const char* error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr) {
+            fprintf(stderr, "Error before: %s\n", error_ptr);
+        }
+        return;
+    }
+
+    // Проверка наличия объекта Config
+    cJSON* config_obj = cJSON_GetObjectItemCaseSensitive(root, "Config");
+    if (!config_obj || !cJSON_IsObject(config_obj)) {
+        fprintf(stderr, "ParseError - unknown variable: Config\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    // Парсим VoiceRecognizer
+    cJSON* voice_recognizer = cJSON_GetObjectItemCaseSensitive(config_obj, "VoiceRecognizer");
+    if (voice_recognizer && cJSON_IsObject(voice_recognizer)) {
+        cJSON* model_path = cJSON_GetObjectItemCaseSensitive(voice_recognizer, "PocketSphinx_model_path");
+        if (!model_path || !cJSON_IsString(model_path)) {
+            fprintf(stderr, "ParseError - unknown type: PocketSphinx_model_path\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->VoiceRecognizer.PocketSphinx_model_path = strdup(model_path->valuestring);
+
+        cJSON* recognizer_type = cJSON_GetObjectItemCaseSensitive(voice_recognizer, "VoiceRecognizer_Type");
+        if (!recognizer_type || !cJSON_IsString(recognizer_type)) {
+            fprintf(stderr, "ParseError - unknown type: VoiceRecognizer_Type\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->VoiceRecognizer.VoiceRecognizer_Type = strdup(recognizer_type->valuestring);
+
+        cJSON* language_type = cJSON_GetObjectItemCaseSensitive(voice_recognizer, "NaturalLanguage_Type");
+        if (!language_type || !cJSON_IsString(language_type)) {
+            fprintf(stderr, "ParseError - unknown type: NaturalLanguage_Type\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->VoiceRecognizer.NaturalLanguage_Type = strdup(language_type->valuestring);
+    } else {
+        fprintf(stderr, "ParseError - unknown variable: VoiceRecognizer\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    // Парсим EngineWorkMode
+    cJSON* engine_work_mode = cJSON_GetObjectItemCaseSensitive(config_obj, "EngineWorkMode");
+    if (engine_work_mode && cJSON_IsObject(engine_work_mode)) {
+        cJSON* debug_mode = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "EngineDebug_Mode");
+        if (!debug_mode || !cJSON_IsBool(debug_mode)) {
+            fprintf(stderr, "ParseError - unknown type: EngineDebug_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->EngineWorkMode.EngineDebug_Mode = debug_mode->valueint;
+
+        cJSON* optimisation_mode = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "MaxOptimisation_Mode");
+        if (!optimisation_mode || !cJSON_IsBool(optimisation_mode)) {
+            fprintf(stderr, "ParseError - unknown type: MaxOptimisation_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->EngineWorkMode.MaxOptimisation_Mode = optimisation_mode->valueint;
+
+        cJSON* shell_type = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "DebugShell_Type");
+        if (!shell_type || !cJSON_IsString(shell_type)) {
+            fprintf(stderr, "ParseError - unknown type: DebugShell_Type\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->EngineWorkMode.DebugShell_Type = strdup(shell_type->valuestring);
+
+        cJSON* console_type = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "ConsoleEmulator_Type");
+        if (!console_type || !cJSON_IsString(console_type)) {
+            fprintf(stderr, "ParseError - unknown type: ConsoleEmulator_Type\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->EngineWorkMode.ConsoleEmulator_Type = strdup(console_type->valuestring);
+
+        cJSON* multithread_mode = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "MultithreadWorkEngine_Mode");
+        if (!multithread_mode || !cJSON_IsBool(multithread_mode)) {
+            fprintf(stderr, "ParseError - unknown type: MultithreadWorkEngine_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->EngineWorkMode.MultithreadWorkEngine_Mode = multithread_mode->valueint;
+
+        cJSON* build_type = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "BuildVer_Type");
+        if (!build_type || !cJSON_IsString(build_type)) {
+            fprintf(stderr, "ParseError - unknown type: BuildVer_Type\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->EngineWorkMode.BuildVer_Type = strdup(build_type->valuestring);
+    } else {
+        fprintf(stderr, "ParseError - unknown variable: EngineWorkMode\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    // Парсим ScreenProcessing
+    cJSON* screen_processing = cJSON_GetObjectItemCaseSensitive(config_obj, "ScreenProcessing");
+    if (screen_processing && cJSON_IsObject(screen_processing)) {
+        cJSON* session_type = cJSON_GetObjectItemCaseSensitive(screen_processing, "XDG_SESSION_Type");
+        if (!session_type || !cJSON_IsString(session_type)) {
+            fprintf(stderr, "ParseError - unknown type: XDG_SESSION_Type\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->ScreenProcessing.XDG_SESSION_Type = strdup(session_type->valuestring);
+
+        cJSON* ignoring_list = cJSON_GetObjectItemCaseSensitive(screen_processing, "IgnoringWindows_List");
+        if (!ignoring_list || !cJSON_IsString(ignoring_list)) {
+            fprintf(stderr, "ParseError - unknown type: IgnoringWindows_List\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->ScreenProcessing.IgnoringWindows_List = strdup(ignoring_list->valuestring);
+
+        cJSON* ignore_screen_mode = cJSON_GetObjectItemCaseSensitive(screen_processing, "IgnoreMyScreen_Mode");
+        if (!ignore_screen_mode || !cJSON_IsBool(ignore_screen_mode)) {
+            fprintf(stderr, "ParseError - unknown type: IgnoreMyScreen_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->ScreenProcessing.IgnoreMyScreen_Mode = ignore_screen_mode->valueint;
+
+        cJSON* threshold_time = cJSON_GetObjectItemCaseSensitive(screen_processing, "TresholdFrameProcessing_Time");
+        if (!threshold_time || !cJSON_IsNumber(threshold_time)) {
+            fprintf(stderr, "ParseError - unknown type: TresholdFrameProcessing_Time\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->ScreenProcessing.TresholdFrameProcessing_Time = threshold_time->valuedouble;
+
+        cJSON* inactivity_time = cJSON_GetObjectItemCaseSensitive(screen_processing, "InactivityTimeTreshold");
+        if (!inactivity_time || !cJSON_IsNumber(inactivity_time)) {
+            fprintf(stderr, "ParseError - unknown type: InactivityTimeTreshold\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->ScreenProcessing.InactivityTimeTreshold = inactivity_time->valueint;
+
+        cJSON* check_interval = cJSON_GetObjectItemCaseSensitive(screen_processing, "CheckIntervalTime");
+        if (!check_interval || !cJSON_IsNumber(check_interval)) {
+            fprintf(stderr, "ParseError - unknown type: CheckIntervalTime\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->ScreenProcessing.CheckIntervalTime = check_interval->valueint;
+    } else {
+        fprintf(stderr, "ParseError - unknown variable: ScreenProcessing\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    // Парсим Logging
+    cJSON* logging = cJSON_GetObjectItemCaseSensitive(config_obj, "Logging");
+    if (logging && cJSON_IsObject(logging)) {
+        cJSON* log_level = cJSON_GetObjectItemCaseSensitive(logging, "LogLevel_Mode");
+        if (!log_level || !cJSON_IsString(log_level)) {
+            fprintf(stderr, "ParseError - unknown type: LogLevel_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->Logging.LogLevel_Mode = strdup(log_level->valuestring);
+
+        cJSON* private_logs = cJSON_GetObjectItemCaseSensitive(logging, "PrivateLogs_Mode");
+        if (!private_logs || !cJSON_IsBool(private_logs)) {
+            fprintf(stderr, "ParseError - unknown type: PrivateLogs_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->Logging.PrivateLogs_Mode = private_logs->valueint;
+
+        cJSON* log_to_file = cJSON_GetObjectItemCaseSensitive(logging, "LogToFile_Mode");
+        if (!log_to_file || !cJSON_IsBool(log_to_file)) {
+            fprintf(stderr, "ParseError - unknown type: LogToFile_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->Logging.LogToFile_Mode = log_to_file->valueint;
+
+        cJSON* log_to_console = cJSON_GetObjectItemCaseSensitive(logging, "LogToConsole_Mode");
+        if (!log_to_console || !cJSON_IsBool(log_to_console)) {
+            fprintf(stderr, "ParseError - unknown type: LogToConsole_Mode\n");
+            cJSON_Delete(root);
+            return;
+        }
+        config->Logging.LogToConsole_Mode = log_to_console->valueint;
+    } else {
+        fprintf(stderr, "ParseError - unknown variable: Logging\n");
+        cJSON_Delete(root);
+        return;
+    }
+
+    cJSON_Delete(root);
+    delete config;
+    delete[] buffer;
+}
+/*
+int main() {
+    FILE* file = fopen("config.json", "r");
+    if (!file) {
+        fprintf(stderr, "Failed to open config.json\n");
+        return 1;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char* buffer = malloc(size + 1);
+    fread(buffer, 1, size, file);
+    buffer[size] = '\0';
+
+    fclose(file);
+
+    Config config;
+    parse_config(buffer, &config);
+*/
+
+/*
+    // Выводим значения для проверки
+    printf("PocketSphinx_model_path: %s\n", config.VoiceRecognizer.PocketSphinx_model_path);
+    printf("VoiceRecognizer_Type: %s\n", config.VoiceRecognizer.VoiceRecognizer_Type);
+    printf("NaturalLanguage_Type: %s\n", config.VoiceRecognizer.NaturalLanguage_Type);
+
+    printf("EngineDebug_Mode: %d\n", config.EngineWorkMode.EngineDebug_Mode);
+    printf("MaxOptimisation_Mode: %d\n", config.EngineWorkMode.MaxOptimisation_Mode);
+    printf("DebugShell_Type: %s\n", config.EngineWorkMode.DebugShell_Type);
+    printf("ConsoleEmulator_Type: %s\n", config.EngineWorkMode.ConsoleEmulator_Type);
+    printf("MultithreadWorkEngine_Mode: %d\n", config.EngineWorkMode.MultithreadWorkEngine_Mode);
+    printf("BuildVer_Type: %s\n", config.EngineWorkMode.BuildVer_Type);
+
+    printf("XDG_SESSION_Type: %s\n", config.ScreenProcessing.XDG_SESSION_Type);
+    printf("IgnoringWindows_List: %s\n", config.ScreenProcessing.IgnoringWindows_List);
+    printf("IgnoreMyScreen_Mode: %d\n", config.ScreenProcessing.IgnoreMyScreen_Mode);
+    printf("TresholdFrameProcessing_Time: %f\n", config.ScreenProcessing.TresholdFrameProcessing_Time);
+    printf("InactivityTimeTreshold: %d\n", config.ScreenProcessing.InactivityTimeTreshold);
+    printf("CheckIntervalTime: %d\n", config.ScreenProcessing.CheckIntervalTime);
+
+    printf("LogLevel_Mode: %s\n", config.Logging.LogLevel_Mode);
+    printf("PrivateLogs_Mode: %d\n", config.Logging.PrivateLogs_Mode);
+    printf("LogToFile_Mode: %d\n", config.Logging.LogToFile_Mode);
+    printf("LogToConsole_Mode: %d\n", config.Logging.LogToConsole_Mode);
+*/
+  
 
 void launchConsole(const char* title) {
 
@@ -450,8 +746,7 @@ void setPrompt(const char* prompt) {
         }
         prompt = strdup(prompt);
     }
-    pthread_mutex_unlock(&mutex);
-}
+    pthread_mutex_unlock(&mutex);}
 /* Main not need for shared object
 int main(int argc, char* argv[]) {
     if (argc > 1 && strcmp(argv[1], "--debug") == 0) {
