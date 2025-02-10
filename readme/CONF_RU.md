@@ -48,6 +48,19 @@
 <h2>VoiceRecognizer</h2>
 
 Настройки распознавателя голоса имеют переменные конфигуратора `PocketSphinx_model_path`, `VoiceRecognizer_Type`, `NaturalLanguage_Type`.
-Их не так много и они интуитивно понятны.
-`PocketSphinx_model_path` - Путь к PocketSphinx модели если вы используете `C` распознаватель голоса 
-`VoiceRecognizer_Type` - Выбор распознавателя голоса, имеет только два правильных варианта `Python` и `C`
+Их не так много и они интуитивно понятны.  <br>
+- `PocketSphinx_model_path` - Путь к PocketSphinx модели если вы используете `C` распознаватель голоса <br>  
+- `VoiceRecognizer_Type` - Выбор распознавателя голоса, имеет только два правильных варианта `Python` и `C` <br>
+- `NaturalLanguage_Type` - Выбор натурального языка, поддерживает только en-us и ru-ru
+
+<h2>EngineWorkMode</h2>
+
+Настройки основной работы движка. Переменные конфигуратора - `EngineDebug_Mode`, `MaxOptimisation_Mode`, `DebugShell_Type`, `ConsoleEmulator_Type`, `MultithreadWorkEngine_Mode` и `BuildVer_Type`.
+- `EngineDebug_Mode` - Логическая переменная, включает дебаг режим для.
+- `MaxOptimisation_Mode` - Включает режим оптимизации движка чтобы запустилось на любом ведре
+- `DebugShell_Type` - Окружение в котором будет выводится логи, например `/usr/bin/zsh` и тп. Как правило выбирает bash автоматически.
+- `ConsoleEmulator_Type` - Эмулятор консоли в котором хотите видеть логи, например `kitty`, `powershell`, `gnometerm` и др.
+- `MultithreadWorkEngine_Mode` - Движок может работать однопоточно, но используя многопотчную оптимизацию он будет гораздо быстрее и практичнее. Следователно это логическая переменная.
+- `BuildVer_Type` - Вариант поставки движка, `Python`, `GUI` или `Native`.
+
+<h2>ScreenProcessing</h2>
