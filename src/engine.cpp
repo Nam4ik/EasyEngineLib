@@ -8,9 +8,9 @@
 //Need to remove useless funcs for optimise
 //Core dumped...
 //Maybe shared object will work?
-//Idk i compiled this but dont used and debuged :D 
+//Idk i compiled this but dont used and debugged :D 
 //... 
-
+//Я не определился C или C++ по этому похуй
 //Developing for AthenaUI
 
 /*
@@ -342,6 +342,25 @@ void parse_config(const char* json_str, Config* config) {
         return;
     }
 
+      FILE* file = fopen("config.json", "r");
+    if (!file) {
+        fprintf(stderr, "Failed to open config.json\n");
+        return 1;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    char* buffer = malloc(size + 1);
+    fread(buffer, 1, size, file);
+    buffer[size] = '\0';
+
+    fclose(file);
+
+    Config config;
+    parse_config(buffer, &config);
+  
     cJSON_Delete(root);
     delete config;
     delete[] buffer;
