@@ -49,7 +49,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-All rights reserved Arcane ® 2025.
+All rights reserved ArcaneDev ® 2025.
 */
 
 
@@ -139,7 +139,7 @@ typedef struct {
     LoggingConfig Logging;
 } Config;
 
-// Функция для загрузки и парсинга JSON файла
+
 void parse_config(const char* json_str, Config* config) {
     cJSON* root = cJSON_Parse(json_str);
     if (!root) {
@@ -158,7 +158,7 @@ void parse_config(const char* json_str, Config* config) {
         return;
     }
 
-    // Парсим VoiceRecognizer
+
     cJSON* voice_recognizer = cJSON_GetObjectItemCaseSensitive(config_obj, "VoiceRecognizer");
     if (voice_recognizer && cJSON_IsObject(voice_recognizer)) {
         cJSON* model_path = cJSON_GetObjectItemCaseSensitive(voice_recognizer, "PocketSphinx_model_path");
@@ -190,7 +190,7 @@ void parse_config(const char* json_str, Config* config) {
         return;
     }
 
-    // Парсим EngineWorkMode
+
     cJSON* engine_work_mode = cJSON_GetObjectItemCaseSensitive(config_obj, "EngineWorkMode");
     if (engine_work_mode && cJSON_IsObject(engine_work_mode)) {
         cJSON* debug_mode = cJSON_GetObjectItemCaseSensitive(engine_work_mode, "EngineDebug_Mode");
@@ -246,7 +246,7 @@ void parse_config(const char* json_str, Config* config) {
         return;
     }
 
-    // Парсим ScreenProcessing
+
     cJSON* screen_processing = cJSON_GetObjectItemCaseSensitive(config_obj, "ScreenProcessing");
     if (screen_processing && cJSON_IsObject(screen_processing)) {
         cJSON* session_type = cJSON_GetObjectItemCaseSensitive(screen_processing, "XDG_SESSION_Type");
@@ -302,7 +302,7 @@ void parse_config(const char* json_str, Config* config) {
         return;
     }
 
-    // Парсим Logging
+  
     cJSON* logging = cJSON_GetObjectItemCaseSensitive(config_obj, "Logging");
     if (logging && cJSON_IsObject(logging)) {
         cJSON* log_level = cJSON_GetObjectItemCaseSensitive(logging, "LogLevel_Mode");
