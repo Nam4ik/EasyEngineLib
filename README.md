@@ -17,6 +17,7 @@ __At the moment, this is my pet project and it is still in development. He will 
 Opportunities
 --------------
 As it says in the description, it can render .gif, .jpg, and .png. The drawing takes place relative to the coordinates set in the function. It supports asynchronous operation and rendering of several images or GIFs at once. 
+Не релизнуто, билд в пайтон библиотеку работает странно
 <h3>Functions</h3> 
 
 - `initEngine` - **Initializes the engine, creates a window and a renderer.** Please add it to your code before using it.
