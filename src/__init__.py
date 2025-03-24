@@ -1,6 +1,6 @@
 from . import _engine
 
-# Экспорт функций из модуля _engine
+# Экспорт функций из  _engine
 initEngine = _engine.initEngine
 cleanupEngine = _engine.cleanupEngine
 renderRectangle = _engine.renderRectangle
