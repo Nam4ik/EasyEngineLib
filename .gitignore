@@ -3,6 +3,11 @@
 
 *.7z
 
+build/
+
+CMakeCache.txt
+CMakeFiles/
+
 pre-builds/
 
 # Prerequisites
