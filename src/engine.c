@@ -72,15 +72,6 @@ All rights reserved ArcaneDev ® 2025.
 //TODO Turtle UI and add to UI installation builder 
 
 
-extern "C++" {
-    void initEngine(const char* title, int width, int height);
-    void cleanupEngine();
-    void renderRectangle(int x, int y, int width, int height, unsigned int color);
-    void renderImage(const char* imagePath, int x, int y);
-    void renderGIF(const char* gifPath, int x, int y);
-}
-
-
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
@@ -345,20 +336,20 @@ void parse_config(const char* json_str, Config* config) {
       FILE* file = fopen("config.json", "r");
     if (!file) {
         fprintf(stderr, "Failed to open config.json\n");
-        return 1;
+        
     }
 
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    char* buffer = malloc(size + 1);
+    void* buffer = malloc(size + 1);
     fread(buffer, 1, size, file);
     buffer[size] = '\0';
 
     fclose(file);
 
-    Config config;
+    Config* config;
     parse_config(buffer, &config);
   
     cJSON_Delete(root);
